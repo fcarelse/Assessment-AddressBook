@@ -16,6 +16,10 @@ public class AddressBookApp {
 	private static Scanner console = new Scanner(System.in);
 	protected static AddressBook addressBook;
 
+	/**
+	 * Entry point of execution of the program
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try{
 			// initialize the address book;
@@ -35,7 +39,7 @@ public class AddressBookApp {
 	}
 
 	/**
-	 *
+	 * Execute command from parameters
 	 * @param args
 	 */
 	protected static void useCommandLine (String[] args){
@@ -70,6 +74,9 @@ public class AddressBookApp {
 		}
 	}
 
+	/**
+	 * Prompt for user commands
+	 */
 	protected static void usePrompt(){
 		usingPrompt = true;
 		// Read from the console
@@ -115,7 +122,7 @@ public class AddressBookApp {
 	}
 
 	/**
-	 * Print help info
+	 * Print help info for specific commands
 	 */
 	private static void printHelp(String[] args){
 		String command;
