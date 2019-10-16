@@ -14,7 +14,7 @@ public class AddressBookApp {
 	// Boolean indicator if using command line arguments or if using menu prompt for commands
 	private static boolean usingPrompt = false;
 	private static Scanner console = new Scanner(System.in);
-	private static AddressBook addressBook;
+	protected static AddressBook addressBook;
 
 	public static void main(String[] args) {
 		try{
@@ -38,13 +38,15 @@ public class AddressBookApp {
 	 *
 	 * @param args
 	 */
-	private static void useCommandLine (String[] args) throws Exception {
+	protected static void useCommandLine (String[] args){
 		// Collect the command and convert to lowercase to make it case insensitive.
-		if(args.length < 1) throw new Exception("Arguments needed");
+		if(args.length < 1) printMenu();
 		String command = args[0].toLowerCase();
 		try{
 			switch(command){
-				case "help": printMenu();
+				case "menu": printMenu();
+					break;
+				case "help": printHelp(args);
 					break;
 				case "init": addressBook.init();
 					break;
@@ -63,19 +65,18 @@ public class AddressBookApp {
 		}catch(Exception issue){
 			System.out.println("Error: " + issue.getMessage());
 		}
-
 	}
 
-	private static void usePrompt(){
+	protected static void usePrompt(){
 		usingPrompt = true;
 		// Read from the console
 		String[] args;
-		String command = "";
+		String command = "menu";
 
+		printMenu();
 
 		// Loop until commanded to exit the program
-		while(command != "quit"){
-			printMenu();
+		while(command != "quit" && command != "exit" && command != ""){
 			args = console.nextLine().split("\\s+");
 			if(args.length < 1) System.exit(0);
 			else {
@@ -84,6 +85,7 @@ public class AddressBookApp {
 					useCommandLine(args);
 				} catch(Exception e){
 					System.exit(0);
+					return;
 				}
 			}
 		}
@@ -95,8 +97,9 @@ public class AddressBookApp {
 	private static void printMenu(){
 		System.out.println("Address Book usage: <command> <options...>");
 		System.out.println("Commands");
-		System.out.println("init : Reset data");
+		System.out.println("menu : Show this menu");
 		System.out.println("help : Help with a command");
+		System.out.println("init : Reset data");
 		System.out.println("list : List contacts");
 		System.out.println("add  : Add contact");
 		System.out.println("del  : Remove contact");

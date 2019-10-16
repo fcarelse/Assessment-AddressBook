@@ -1,17 +1,29 @@
 package com.github.fcarelse.assessment;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class AddressBook {
-	private String filename;
 	private JsonArray contacts;
-	private File file;
+	private String filename = "default.json";
+	private File file = new File(filename);
 
 	public AddressBook(){
-		this.init();
+		if(!file.exists()) {
+			init();
+			saveFile(filename);
+		}else{
+			loadFile(filename);
+		}
 	}
 
 	public AddressBook(String filename) throws IOException {
@@ -20,18 +32,36 @@ public class AddressBook {
 
 		if(!file.exists()) {
 			init();
-			saveFile();
 		}else{
-			loadJSON(file.toString());
+			loadFile(filename);
 		}
 	}
 
-	private void loadJSON(String toString) {
-		throw new Error("Method not defined!");
+	private void loadFile(String filename){
+		try (FileReader fileReader = new FileReader(filename)) {
+			contacts = (JsonArray) Jsoner.deserialize(fileReader);
+
+//			// need dozer to copy object to staff, json_simple no api for this?
+//			Mapper mapper = new DozerBeanMapper();
+//
+//			// JSON to object
+//			contacts = mapper.map(deserialize, JsonArray.class);
+
+		}catch(IOException e){
+			System.out.println("Failed to load from file");
+		}catch(JsonException e){
+			System.out.println("Failed to unserialize from file");
+		}
 	}
 
-	private void saveFile() {
-		throw new Error("Method not defined!");
+	private void saveFile(String filename) {
+		String json = Jsoner.serialize(contacts);
+		json = Jsoner.prettyPrint(json);
+		try (FileWriter fileWriter = new FileWriter(filename)) {
+			Jsoner.serialize(contacts, fileWriter);
+		}catch(IOException e){
+			System.out.println("Failed to save to file");
+		}
 	}
 
 	public void init() {
@@ -43,6 +73,7 @@ public class AddressBook {
 		((Contact) contacts.get(0)).addInfo("phone", "0855567890");
 		((Contact) contacts.get(1)).addInfo("email", "bob.apple@example.com");
 		((Contact) contacts.get(2)).addInfo("email", "sam.wedge@example.com");
+		saveFile(filename)
 	}
 
 	/**
@@ -55,7 +86,11 @@ public class AddressBook {
 	 * @param args
 	 */
 	public void list(String[] args) {
-		throw new Error("Method not defined!");
+		int index = 1;
+		for(Object contact: contacts.toArray()){
+			System.out.printf("%d: %s %s\n", index++, ((JsonObject) contact).get("first"), ((JsonObject) contact).get("last"));
+		}
+		saveFile(filename);
 	}
 
 	/**
@@ -64,8 +99,10 @@ public class AddressBook {
 	 * Argument 2 is the second name
 	 * @param args
 	 */
-	public void add(String[] args) {
-		throw new Error("Method not defined!");
+	public void add(String[] args) throws Exception{
+		if(args.length < 3) throw new Exception("Need 2 arguments for the add command");
+		contacts.add(new Contact(args[1], args[2]));
+		saveFile(filename);
 	}
 
 	/**
