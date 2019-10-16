@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 public class AddressBookAppTest {
 	@Test
-	public void testUseCommandLine(){
+	public void testUseCommandLine() throws Exception {
 		// create and configure mock
 		AddressBook aBook = Mockito.mock(AddressBook.class);
 		AddressBookApp.addressBook = aBook;

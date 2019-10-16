@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class AddressBook {
 	private JsonArray contacts;
@@ -39,8 +41,11 @@ public class AddressBook {
 
 	private void loadFile(String filename){
 		try (FileReader fileReader = new FileReader(filename)) {
-			contacts = (JsonArray) Jsoner.deserialize(fileReader);
-
+			JsonArray data = (JsonArray) Jsoner.deserialize(fileReader);
+			contacts = new JsonArray();
+			for(Object contact: data.toArray()){
+				contacts.add(new Contact((JsonObject) contact));
+			}
 //			// need dozer to copy object to staff, json_simple no api for this?
 //			Mapper mapper = new DozerBeanMapper();
 //
@@ -64,6 +69,9 @@ public class AddressBook {
 		}
 	}
 
+	/**
+	 * Initializes contacts in address book with default data.
+	 */
 	public void init() {
 		contacts = new JsonArray();
 		contacts.add(new Contact("Fred", "Flintstone"));
@@ -73,7 +81,15 @@ public class AddressBook {
 		((Contact) contacts.get(0)).addInfo("phone", "0855567890");
 		((Contact) contacts.get(1)).addInfo("email", "bob.apple@example.com");
 		((Contact) contacts.get(2)).addInfo("email", "sam.wedge@example.com");
-		saveFile(filename)
+		saveFile(filename);
+	}
+
+	/**
+	 * Alternative list method without arguments
+ 	 */
+	public void list() {
+		String[] noArgs = {};
+		list(noArgs);
 	}
 
 	/**
@@ -86,11 +102,22 @@ public class AddressBook {
 	 * @param args
 	 */
 	public void list(String[] args) {
+		if(args.length>1 && (args[1].toLowerCase().equals("first") || args[1].toLowerCase().equals("last"))) {
+			System.out.println("Sorting "+args[1].toLowerCase());
+			boolean first = args[1].toLowerCase().equals("first");
+			if(args.length>2 && args[2].toLowerCase().equals("desc")){
+				System.out.printf("Sorting by %s Descending\n", first? "First Name": "Last Name");
+				contacts.sort(first? firstDesc: lastDesc);
+			} else {
+				System.out.printf("Sorting by %s Ascending\n", first? "First Name": "Last Name");
+				contacts.sort(first? firstAsc: lastAsc);
+			}
+			saveFile(filename);
+		}
 		int index = 1;
 		for(Object contact: contacts.toArray()){
 			System.out.printf("%d: %s %s\n", index++, ((JsonObject) contact).get("first"), ((JsonObject) contact).get("last"));
 		}
-		saveFile(filename);
 	}
 
 	/**
@@ -110,8 +137,10 @@ public class AddressBook {
 	 * Parameter 1 is the index
 	 * @param args
 	 */
-	public void del(String[] args) {
-		throw new Error("Method not defined!");
+	public void del(String[] args) throws Exception {
+		if(args.length < 2) throw new Exception("Need a contact index for the del command");
+		contacts.remove(Integer.parseInt(args[1])-1);
+		saveFile(filename);
 	}
 
 	/**
@@ -124,8 +153,33 @@ public class AddressBook {
 	 * @param args
 	 * @throws Exception if index out of bounds
 	 */
-	public void edit(String[] args) {
-		throw new Error("Method not defined!");
+	public void edit(String[] args) throws Exception {
+		if(args.length < 2) throw new Exception("Need a contact index for the edit command");
+		if(args.length == 2) {
+			view(args);
+			System.out.println("Use the command: edit <index> <info> <field> <value>");
+			System.out.println("Where <info> is 'first', 'last' or 'info' for First name, Last name or Contact information, respectively");
+			System.out.println("Leave out the value if you want to remove that field's contact information value");
+			return;
+		}
+		Contact contact = (Contact) contacts.get(Integer.parseInt(args[1])-1);
+		if(args.length < 4) throw new Exception("Need to specify 'first', 'last', or 'info'");
+		switch(args[2]){
+			case "first":
+				contact.setFirst(args[3]);
+				break;
+			case "last":
+				contact.setLast(args[3]);
+				break;
+			case "info":
+				if(args.length < 4) throw new Exception("Need a field to edit contact info");
+				if(args.length<5) { // If there is no value to assign then remove info
+					contact.delInfo(args[3]);
+				}else{ // Otherwise update the info.
+					contact.addInfo(args[3],args[4]);
+				}
+		}
+		saveFile(filename);
 	}
 
 	/**
@@ -135,7 +189,46 @@ public class AddressBook {
 	 * @param args
 	 * @throws Exception if index out of bounds
 	 */
-	public void view(String[] args) {
-		throw new Error("Method not defined!");
+	public void view(String[] args) throws Exception{
+		if(args.length < 2) throw new Exception("Need a contact index for the view command");
+		Contact contact = ((Contact) contacts.get(Integer.parseInt(args[1])-1));
+		System.out.printf("First name: %s\n", contact.getFirst());
+		System.out.printf("Last name: %s\n", contact.getLast());
+		if(contact.info.isEmpty()){
+			System.out.println("No contact information.");
+		} else {
+			System.out.println("Contact Information: ");
+			for(Object key: contact.info.keySet().toArray()) {
+				System.out.printf("%s: %s\n", key, contact.info.get(key));
+			}
+		}
 	}
+
+	public static Comparator firstAsc = new Comparator() {
+		@Override
+		public int compare(Object contact1, Object contact2) {
+			return ((Contact) contact1).getFirst().compareTo(((Contact) contact2).getFirst());
+		}
+	};
+
+	public static Comparator firstDesc = new Comparator() {
+		@Override
+		public int compare(Object contact1, Object contact2) {
+			return ((Contact) contact2).getFirst().compareTo(((Contact) contact1).getFirst());
+		}
+	};
+
+	public static Comparator lastAsc = new Comparator() {
+		@Override
+		public int compare(Object contact1, Object contact2) {
+			return ((Contact) contact1).getLast().compareTo(((Contact) contact2).getLast());
+		}
+	};
+
+	public static Comparator lastDesc = new Comparator() {
+		@Override
+		public int compare(Object contact1, Object contact2) {
+			return ((Contact) contact2).getLast().compareTo(((Contact) contact1).getLast());
+		}
+	};
 }

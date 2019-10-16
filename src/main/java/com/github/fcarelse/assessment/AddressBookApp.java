@@ -44,11 +44,12 @@ public class AddressBookApp {
 		String command = args[0].toLowerCase();
 		try{
 			switch(command){
-				case "menu": printMenu();
+				case "menu": case "": printMenu();
 					break;
 				case "help": printHelp(args);
 					break;
 				case "init": addressBook.init();
+					addressBook.list();
 					break;
 				case "list": addressBook.list(args);
 					break;
@@ -60,6 +61,8 @@ public class AddressBookApp {
 					break;
 				case "view": addressBook.view(args);
 					break;
+				case "quit": case "exit":
+					System.exit(0);
 				default: throw new Exception("Unrecognized command: " + command);
 			}
 		}catch(Exception issue){
@@ -77,6 +80,7 @@ public class AddressBookApp {
 
 		// Loop until commanded to exit the program
 		while(command != "quit" && command != "exit" && command != ""){
+			System.out.print("Enter a command ( default 'menu'): ");
 			args = console.nextLine().split("\\s+");
 			if(args.length < 1) System.exit(0);
 			else {
@@ -106,8 +110,7 @@ public class AddressBookApp {
 		System.out.println("edit : Edit contact");
 		System.out.println("view : View contact");
 		if(usingPrompt) {
-			System.out.println("quit : Exit the system\n"+
-							"  or leave line blank and press enter to exit");
+			System.out.println("quit : Exit the system");
 		}
 	}
 

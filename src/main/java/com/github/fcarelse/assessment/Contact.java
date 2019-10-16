@@ -17,6 +17,12 @@ public class Contact extends JsonObject {
 		this.last = last;
 	}
 
+	public Contact(JsonObject contact) {
+		this.setFirst((String) contact.get("first"));
+		this.setLast((String) contact.get("last"));
+		this.info = (JsonObject) contact.get("info");
+	}
+
 	public String[] allInfo() {
 		throw new Error("Method not defined!");
 	}
@@ -43,8 +49,10 @@ public class Contact extends JsonObject {
 		info.put(field, value);
 	}
 
-	public void delInfo(String field) {
-		throw new Error("Method not defined!");
+	public void delInfo(String field) throws Exception {
+		field = cleanField(field);
+		if(info.containsKey(field)) info.remove(field);
+		else throw new Exception("Cannot find field " + field);
 	}
 
 	/**
@@ -102,6 +110,7 @@ public class Contact extends JsonObject {
 
 	public void setFirst(String first) {
 		this.first = first;
+		this.put("first", first);
 	}
 
 
@@ -111,5 +120,6 @@ public class Contact extends JsonObject {
 
 	public void setLast(String last) {
 		this.last = last;
+		this.put("last", last);
 	}
 }
