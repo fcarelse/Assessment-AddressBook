@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class AddressBook {
@@ -16,15 +17,12 @@ public class AddressBook {
 	private String filename = "default.json";
 	private File file = new File(filename);
 
-	public AddressBook(){
-		if(!file.exists()) {
-			init();
-			saveFile(filename);
-		}else{
-			loadFile(filename);
-		}
-	}
-
+	/**
+	 * Construct a new Address Book from a given JSON file's filename
+	 *
+	 * @param filename
+	 * @throws IOException
+	 */
 	public AddressBook(String filename) throws IOException {
 		this.filename = filename;
 		file = new File(filename);
@@ -36,6 +34,10 @@ public class AddressBook {
 		}
 	}
 
+	/**
+	 * Load contacts list from JSON file
+	 * @param filename
+	 */
 	private void loadFile(String filename){
 		try (FileReader fileReader = new FileReader(filename)) {
 			JsonArray data = (JsonArray) Jsoner.deserialize(fileReader);
@@ -43,12 +45,6 @@ public class AddressBook {
 			for(Object contact: data.toArray()){
 				contacts.add(new Contact((JsonObject) contact));
 			}
-//			// need dozer to copy object to staff, json_simple no api for this?
-//			Mapper mapper = new DozerBeanMapper();
-//
-//			// JSON to object
-//			contacts = mapper.map(deserialize, JsonArray.class);
-
 		}catch(IOException e){
 			System.out.println("Failed to load from file");
 		}catch(JsonException e){
@@ -56,6 +52,10 @@ public class AddressBook {
 		}
 	}
 
+	/**
+	 * Save contacts list into JSON file
+	 * @param filename
+	 */
 	private void saveFile(String filename) {
 		String json = Jsoner.serialize(contacts);
 		json = Jsoner.prettyPrint(json);
@@ -83,6 +83,7 @@ public class AddressBook {
 
 	/**
 	 * Alternative list method without arguments
+	 * Full list method below
  	 */
 	public void list() {
 		String[] noArgs = {};
@@ -113,7 +114,7 @@ public class AddressBook {
 		}
 		int index = 1;
 		for(Object contact: contacts.toArray()){
-			System.out.printf("%d: %s %s\n", index++, ((JsonObject) contact).get("first"), ((JsonObject) contact).get("last"));
+			System.out.printf("%d: %s %s\n", index++, ((Contact) contact).getFirst(), ((Contact) contact).getLast());
 		}
 	}
 
@@ -173,7 +174,7 @@ public class AddressBook {
 				if(args.length<5) { // If there is no value to assign then remove info
 					contact.delInfo(args[3]);
 				}else{ // Otherwise update the info.
-					contact.addInfo(args[3],args[4]);
+					contact.addInfo(args[3], args[4]);
 				}
 		}
 		saveFile(filename);
@@ -201,6 +202,9 @@ public class AddressBook {
 		}
 	}
 
+	/**
+	 * Comparator for sorting by first name ascending
+	 */
 	public static Comparator firstAsc = new Comparator() {
 		@Override
 		public int compare(Object contact1, Object contact2) {
@@ -208,6 +212,9 @@ public class AddressBook {
 		}
 	};
 
+	/**
+	 * Comparator for sorting by first name descending
+	 */
 	public static Comparator firstDesc = new Comparator() {
 		@Override
 		public int compare(Object contact1, Object contact2) {
@@ -215,6 +222,9 @@ public class AddressBook {
 		}
 	};
 
+	/**
+	 * Comparator for sorting by last name ascending
+	 */
 	public static Comparator lastAsc = new Comparator() {
 		@Override
 		public int compare(Object contact1, Object contact2) {
@@ -222,6 +232,9 @@ public class AddressBook {
 		}
 	};
 
+	/**
+	 * Comparator for sorting by last name descending
+	 */
 	public static Comparator lastDesc = new Comparator() {
 		@Override
 		public int compare(Object contact1, Object contact2) {

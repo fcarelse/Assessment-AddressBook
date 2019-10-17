@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AssessmentAddressBook:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AssessmentAddressBook_jar</output-path>
+    <root id="archive" name="AssessmentAddressBook.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="AssessmentAddressBook" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy-agent/1.9.10/byte-buddy-agent-1.9.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/cliftonlabs/json-simple/3.1.0/json-simple-3.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/objenesis/objenesis/2.6/objenesis-2.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mockito/mockito-core/3.1.0/mockito-core-3.1.0.jar" path-in-jar="/" />
+      <element id="library" level="project" name="Maven: com.github.cliftonlabs:json-simple:3.1.0" />
+      <element id="library" level="project" name="Maven: org.mockito:mockito-core:3.1.0" />
+      <element id="library" level="project" name="Maven: net.bytebuddy:byte-buddy:1.9.10" />
+      <element id="library" level="project" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.10" />
+      <element id="library" level="project" name="Maven: org.objenesis:objenesis:2.6" />
+    </root>
+  </artifact>
+</component>

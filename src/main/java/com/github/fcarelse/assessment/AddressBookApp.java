@@ -82,9 +82,7 @@ public class AddressBookApp {
 		// Read from the console
 		String[] args;
 		String command = "menu";
-
 		printMenu();
-
 		// Loop until commanded to exit the program
 		while(command != "quit" && command != "exit" && command != ""){
 			System.out.print("Enter a command ( default 'menu'): ");
@@ -125,18 +123,47 @@ public class AddressBookApp {
 	 * Print help info for specific commands
 	 */
 	private static void printHelp(String[] args){
-		String command;
 		if(args.length < 2) {
 			System.out.println("Enter parameters: help <command> \n"+
 							"Commands are: list, add, del, edit and init");
 			return;
 		}
 		else {
-			command = args[2];
-			try{
-				useCommandLine(args);
-			} catch(Exception e){
-				System.exit(0);
+			switch(args[1]){
+				case "help": System.out.println("E.G. Type: \"help init\" to show help about the init command");
+					break;
+				case "init":
+					System.out.println("Init: This command resets data and creates 3 default contacts with default contact information in each");
+					break;
+				case "list":
+					System.out.println("List: This command lists out all Contacts. The index of the contact is used for viewing and editing");
+					System.out.println("List: You can add an argument of \"first\" or \"last\" to sort by first name or last name respectively");
+					System.out.println("List: You can add another argument of \"desc\" if you want the sort to be descending in order");
+					System.out.println("List: Make a note to the change in the index as the contacts are moved in storage");
+					break;
+				case "add":
+					System.out.println("Add: Add a new contact. Provide first name and last name as 2 parameters");
+					break;
+				case "del":
+					System.out.println("Del: Delete a contact. Provide index of contact from last List command.");
+					break;
+				case "edit":
+					System.out.println("Edit: Edit a contact. Provide index of contact from last List command.");
+					System.out.println("Edit: Next argument is either \"first\", \"last\" or \"info\".");
+					System.out.println("Edit: If editting first name or last name the next parameter is the value to assign.");
+					System.out.println("Edit: If editting contact info the next parameter is the contact information field name.");
+					System.out.println("Edit: If editting contact info by field name, if the next parameter is left out the contact information is removed.");
+					System.out.println("Edit: If editting contact info the parameter after the field name is the value to assign.");
+					System.out.println("Edit: For assigning values you can use \"\\\" before a space character to keep the space character.");
+					System.out.println("Edit: E.G. \"33\\ East\\ Boulevard\" will be saved as \"33 East Boulevard\".");
+					break;
+				case "view":
+					System.out.println("View: View a contact. Provide index of contact from last List command.");
+					break;
+				case "quit": case "exit":
+					System.out.println("Quit: End the program and return to system.");
+				default:
+					System.out.println("Help: Unrecognized command. Commands are 'init', 'list', 'add', 'del', 'edit', 'view' and 'quit'");
 			}
 		}
 

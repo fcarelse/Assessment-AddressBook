@@ -7,28 +7,33 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 public class Contact extends JsonObject {
-	private String first;
-	private String last;
-	JsonObject info;
+	protected String first; // First name
+	protected String last; // Last name
+	JsonObject info; // Contact Information
 
+	/**
+	 * Constructor of initial contact using First name and Last name
+	 * @param first
+	 * @param last
+	 */
 	public Contact(String first, String last){
 		info = new JsonObject();
 		this.first = first;
 		this.last = last;
 	}
 
+	/**
+	 * Constructor of contact from a JsonObject that was previously contact
+	 * @param contact
+	 */
 	public Contact(JsonObject contact) {
 		this.setFirst((String) contact.get("first"));
 		this.setLast((String) contact.get("last"));
 		this.info = (JsonObject) contact.get("info");
 	}
 
-	public String[] allInfo() {
-		throw new Error("Method not defined!");
-	}
-
 	/**
-	 * Gets contact info based on info type requested
+	 * Gets contact info based on info type field requested
 	 *
 	 * @param field
 	 * @return
@@ -42,6 +47,12 @@ public class Contact extends JsonObject {
 						"";
 	}
 
+	/**
+	 * Add contact info to contact
+	 *
+	 * @param field
+	 * @param value
+	 */
 	public void addInfo(String field, String value){
 		// Clean the field name to lowercase letters and digits.
 		field = cleanField(field);
@@ -49,6 +60,12 @@ public class Contact extends JsonObject {
 		info.put(field, value);
 	}
 
+	/**
+	 * Delete a piece of contact information
+	 *
+	 * @param field
+	 * @throws Exception
+	 */
 	public void delInfo(String field) throws Exception {
 		field = cleanField(field);
 		if(info.containsKey(field)) info.remove(field);
@@ -66,23 +83,22 @@ public class Contact extends JsonObject {
 	}
 
 	/**
-	 * Function for enforcing value
+	 * Function for enforcing value constraints and converting escaped whitespaces to single space
 	 * @param value
 	 * @return String
 	 */
 	private String cleanValue(String value) {
-		// Remove any newline characters
-		return value.replace("\\n","");
+		return value
+						// Change any block of whitespace characters to single space character
+						.replaceAll("\\s+"," ")
+						// Remove any backslash character that is preceding a space character
+						.replaceAll("\\\\(?= )","");
 	}
 
-	public JsonObject toJsonObject(){
-		JsonObject json = new JsonObject();
-		json.put("first", getFirst());
-		json.put("last", getLast());
-		json.put("info", info);
-		return json;
-	}
-
+	/**
+	 * Method to convert self to JSON string
+	 * @return
+	 */
 	@Override
 	public String toJson() {
 		final StringWriter writable = new StringWriter();
@@ -93,6 +109,11 @@ public class Contact extends JsonObject {
 		return writable.toString();
 	}
 
+	/**
+	 * Method to convert self to JSON string and pipe into writer
+	 * @param writer
+	 * @throws IOException
+	 */
 	@Override
 	public void toJson(Writer writer) throws IOException {
 
@@ -108,6 +129,10 @@ public class Contact extends JsonObject {
 		return first;
 	}
 
+	/**
+	 * Setter for First Name. Copies value to the JsonObject part of self
+	 * @param first
+	 */
 	public void setFirst(String first) {
 		this.first = first;
 		this.put("first", first);
@@ -118,6 +143,10 @@ public class Contact extends JsonObject {
 		return last;
 	}
 
+	/**
+	 * Setter for Last Name. Copies value to the JsonObject part of self
+	 * @param last
+	 */
 	public void setLast(String last) {
 		this.last = last;
 		this.put("last", last);
